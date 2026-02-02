@@ -1,0 +1,95 @@
+name: Secure File Sharing CI/CD + Release
+
+on:
+  push:
+    branches: [ "**" ]        # runs on every push (all branches)
+    tags: [ "v*" ]            # release on version tags
+  pull_request:
+    branches: [ "**" ]        # runs on every PR
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+# ---------------- CI JOB ----------------
+jobs:
+  ci:
+    name: CI – Test & Security
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest bandit pylint
+
+      - name: Run PyLint (code quality)
+        run: |
+          pylint main.py || true
+
+      - name: Run Bandit (static security analysis)
+        run: |
+          bandit -r . -x tests/ --confidence-level medium
+
+      - name: Run unit tests
+        run: |
+          pytest tests/test_*.py
+
+      - name: Prepare application directories
+        run: |
+          mkdir -p data/files data/share
+          touch data/pki_share.db
+
+# ---------------- CD / RELEASE JOB ----------------
+  release:
+    name: CD – Docker & GitHub Release
+    needs: ci
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Secure File Sharing ${{ github.ref_name }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

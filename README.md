@@ -1,354 +1,414 @@
-# 🎨 SecureShare Pro - Advanced GUI Redesign
+# 🔐 SecureShare Pro - PKI-Based Secure File Sharing System
 
-> **Enhanced PKI-Based Secure File Sharing System with Modern Professional GUI**
+> **A comprehensive secure file sharing system with PKI, digital signatures, and hybrid encryption**
+
+## 🏗️ Architecture Design
+
+### PKI (Public Key Infrastructure) Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SECURESHARE PRO ARCHITECTURE                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────┐      ┌─────────────┐      ┌─────────────┐    │
+│   │   ALICE     │      │     BOB     │      │   CHARLIE   │    │
+│   │   (User)    │      │   (User)    │      │   (User)    │    │
+│   └──────┬──────┘      └──────┬──────┘      └──────┬──────┘    │
+│          │                    │                    │           │
+│          │  ┌─────────────────┼─────────────────┐  │           │
+│          │  │   RSA-2048 Key Pair Generation     │  │           │
+│          │  │  ┌─────────┐    ┌─────────────┐   │  │           │
+│          │  │  │ Private │◄──►│   Public    │   │  │           │
+│          │  │  │   Key   │    │     Key     │   │  │           │
+│          │  │  └─────────┘    └─────────────┘   │  │           │
+│          │  │                                   │  │           │
+│          │  │   X.509 Self-Signed Certificate   │  │           │
+│          │  └───────────────────────────────────┘  │           │
+│          │                    │                    │           │
+│          ▼                    ▼                    ▼           │
+│   ┌─────────────────────────────────────────────────────┐      │
+│   │              SECURE KEY VAULT (Simulated HSM)       │      │
+│   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  │      │
+│   │  │  keys.json  │  │certificates │  │ shared_files│  │      │
+│   │  │ (Encrypted) │  │    .json    │  │   .json     │  │      │
+│   │  └─────────────┘  └─────────────┘  └─────────────┘  │      │
+│   └─────────────────────────────────────────────────────┘      │
+│                              │                                  │
+│          ┌───────────────────┼───────────────────┐             │
+│          ▼                   ▼                   ▼             │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐       │
+│   │  AES-256    │    │    RSA      │    │    SHA-256  │       │
+│   │   GCM       │    │   OAEP      │    │   Signatures│       │
+│   │ Encryption  │    │  Encryption │    │  & HMAC     │       │
+│   └─────────────┘    └─────────────┘    └─────────────┘       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Cryptographic Stack
+
+| Component | Algorithm | Purpose |
+|-----------|-----------|---------|
+| **Asymmetric Encryption** | RSA-2048 with OAEP | Key exchange, hybrid encryption |
+| **Symmetric Encryption** | AES-256-GCM | File content encryption |
+| **Digital Signatures** | RSA-PSS with SHA-256 | Authentication, non-repudiation |
+| **Key Derivation** | PBKDF2-SHA256 | Password-based key derivation |
+| **Certificates** | X.509 v3 | Identity verification |
+| **Hash Functions** | SHA-256 | Integrity verification |
+
+### Hybrid Encryption Flow
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                    HYBRID ENCRYPTION FLOW                      │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  SENDER                         RECIPIENT                      │
+│    │                               │                           │
+│    │  1. Generate random AES-256 key                           │
+│    │  2. Encrypt file content with AES-256-GCM                 │
+│    │  3. Encrypt AES key with recipient's RSA public key       │
+│    │  4. Sign encrypted package with sender's private key      │
+│    │  5. Send: [Encrypted File + Encrypted Key + IV + Tag + Sig]│
+│    │  6. Verify signature with sender's public key             │
+│    │  7. Decrypt AES key with recipient's RSA private key      │
+│    │  8. Decrypt file content with AES-256-GCM                 │
+│    │  9. Verify file integrity with SHA-256 hash               │
+│    │                               │                           │
+└────────────────────────────────────────────────────────────────┘
+```
 
 ## 🚀 Quick Start
 
-### Run the Application
+### Run Locally
 ```bash
-python securefile.py
-```
+# Install dependencies
+pip install -r requirements.txt
 
-### Run Tests
-```bash
-python securefile.py --test
-```
-
-## ✨ What's New
-
-### Visual Design
-- **Modern Dark Theme** - Professional dark background with bright cyan accents
-- **Card-Based Layout** - Organized information in distinct sections
-- **Professional Typography** - Segoe UI with proper sizing hierarchy
-- **Color-Coded Actions** - Intuitive button colors for different action types
-- **Emoji Navigation** - Visual icons for quick recognition
-
-### User Experience
-- **Better Organization** - Clearer menu structure
-- **Improved Feedback** - Color-coded status messages
-- **Enhanced Navigation** - Emoji-labeled menu items
-- **Status Indicators** - Visual feedback for all operations
-- **Professional Appearance** - Contemporary desktop app look
-
-### Components Updated
-- ✅ Login Screen - Split-panel modern design
-- ✅ Dashboard - Header bar + professional sidebar
-- ✅ Send File View - Card-based layout
-- ✅ Receive Files - Modern table view
-- ✅ Key Management - Professional information display
-- ✅ Security Demos - Tabbed interface
-
-## 🎯 Features
-
-### Security (Unchanged - All Intact ✓)
-- RSA-2048 Asymmetric Encryption
-- AES-256-GCM Symmetric Encryption
-- SHA-256 Digital Signatures
-- X.509 Certificate Management
-- PBKDF2 Key Derivation
-- Hybrid Encryption System
-- Tamper Detection
-- Replay Attack Prevention
-
-### New GUI Features
-- Modern dark theme with cyan accents
-- Professional card-based layout
-- Color-coded status messages
-- Emoji-labeled navigation
-- Better visual hierarchy
-- Improved user feedback
-- Professional buttons with states
-- Enhanced typography
-
-## 📚 Documentation
-
-### Getting Started
-- **[QUICKSTART.md](QUICKSTART.md)** - How to use the application
-- **[INDEX.md](INDEX.md)** - Documentation index and navigation
-
-### Design & Visual
-- **[VISUAL_SHOWCASE.md](VISUAL_SHOWCASE.md)** - Before & after comparison
-- **[DESIGN_REFERENCE.md](DESIGN_REFERENCE.md)** - Design specifications
-- **[FINAL_SUMMARY.md](FINAL_SUMMARY.md)** - Visual summary of changes
-
-### Technical & Details
-- **[TECHNICAL.md](TECHNICAL.md)** - Technical implementation details
-- **[GUI_IMPROVEMENTS.md](GUI_IMPROVEMENTS.md)** - Design improvements breakdown
-- **[ENHANCEMENT_SUMMARY.md](ENHANCEMENT_SUMMARY.md)** - Project overview
-- **[ENHANCEMENT_COMPLETION_REPORT.md](ENHANCEMENT_COMPLETION_REPORT.md)** - Final report
-
-### Summary Documents
-- **[README_GUI_UPDATE.md](README_GUI_UPDATE.md)** - Complete improvement guide
-- **[CHANGES.md](CHANGES.md)** - Detailed change list
-
-## 🎨 Design Highlights
-
-### Color Palette
-- **Primary**: #0f1419 (Dark Background)
-- **Secondary**: #1a1f2b (Card Background)
-- **Accent**: #00d9ff (Cyan - Modern)
-- **Success**: #10b981 (Green)
-- **Error**: #ef4444 (Red)
-- **Secondary**: #6366f1 (Indigo)
-- **Text**: #ffffff (White), #b0b8c1 (Gray)
-
-### Typography
-- 32pt - Page Titles
-- 16pt - Section Headings
-- 13pt - Field Labels
-- 11pt - Body Text
-- 10pt - Code/Output
-- 9pt - Helper Text
-
-### Components
-- Primary Buttons (Cyan)
-- Success Buttons (Green)
-- Secondary Buttons (Indigo Border)
-- Danger Buttons (Red)
-- Input Fields (Dark with focus)
-- Data Tables (Modern)
-- Status Areas (Color-coded)
-
-## 📊 Project Statistics
-
-```
-📦 Deliverables:
-  - 1 Enhanced application file (securefile.py)
-  - 11 Documentation files (2000+ lines)
-  - 100% Test Pass Rate (5/5 tests)
-  - 0 Security Features Removed
-  - 100% Backward Compatible
-
-🎨 Design Elements:
-  - 7 Colors in palette
-  - 6 Typography sizes
-  - 13+ Style classes
-  - 20+ Styled components
-  - 100+ Visual indicators
-
-📊 Coverage:
-  - User Guides: ✓ Complete
-  - Design Specs: ✓ Complete
-  - Technical Docs: ✓ Complete
-  - Visual Refs: ✓ Complete
-  - Testing: ✓ 100% Pass
-```
-
-## ✅ Testing Status
-
-### All Tests Passing ✓
-```
-[✓] User Registration
-[✓] User Login
-[✓] File Encryption
-[✓] File Decryption
-[✓] Tamper Detection
-
-Result: [SUCCESS] ALL TESTS PASSED!
-```
-
-## 🎯 Key Improvements
-
-| Aspect | Before | After |
-|--------|--------|-------|
-| **Theme** | Navy + White | Dark + Cyan |
-| **Typography** | Helvetica | Segoe UI |
-| **Layout** | Simple | Card-Based |
-| **Navigation** | Text-Only | Emoji + Text |
-| **Buttons** | Plain | Modern & Styled |
-| **Feedback** | Generic | Color-Coded |
-| **Professional** | Basic | Excellent |
-| **Modern** | Outdated | Current |
-
-## 🎓 Documentation Paths
-
-### For Users
-1. Read [QUICKSTART.md](QUICKSTART.md) - Learn how to use
-2. Read [FINAL_SUMMARY.md](FINAL_SUMMARY.md) - See what's new
-3. Explore the app - Create accounts and test
-
-### For Designers
-1. View [VISUAL_SHOWCASE.md](VISUAL_SHOWCASE.md) - See before/after
-2. Study [DESIGN_REFERENCE.md](DESIGN_REFERENCE.md) - Learn specifications
-3. Read [GUI_IMPROVEMENTS.md](GUI_IMPROVEMENTS.md) - Understand principles
-
-### For Developers
-1. Read [TECHNICAL.md](TECHNICAL.md) - Learn implementation
-2. Review [DESIGN_REFERENCE.md](DESIGN_REFERENCE.md) - Understand components
-3. Check [CHANGES.md](CHANGES.md) - See what was modified
-
-## 🚀 How to Use
-
-### Launch Application
-```bash
-python securefile.py
-```
-
-### Run Tests
-```bash
-python securefile.py --test
-```
-
-### Get Help
-```bash
-python securefile.py --help
-```
-
-## 💡 Quick Guide
-
-### Create an Account
-1. Click "Create Account"
-2. Enter username and password
-3. Your digital certificate and keys are generated automatically
-
-### Send a File
-1. Click "📤 Send File"
-2. Select a file
-3. Choose recipient
-4. Click "Encrypt & Send"
-
-### Receive a File
-1. Click "📥 Receive Files"
-2. Select a file from the list
-3. Click "🔓 Decrypt Selected"
-4. Choose save location
-
-### View Security Info
-1. Click "⚙️ Settings"
-2. Read about security mechanisms
-3. Run interactive demos
-
-## 🔐 Security Features
-
-### Encryption
-- Hybrid encryption system
-- RSA for key exchange
-- AES-256 for data encryption
-
-### Authentication
-- Digital signatures
-- X.509 certificates
-- User authentication
-
-### Protection
-- Tamper detection
-- Replay attack prevention
-- Integrity verification
-- Non-repudiation
-
-## 📁 Project Structure
-
-```
-secureFile.pro/
-├── securefile.py              # Main application
-├── secure_vault/              # Data storage
-│   ├── keys.json
-│   ├── certificates.json
-│   └── shared_files.json
-└── Documentation/
-    ├── INDEX.md               # Navigation
-    ├── QUICKSTART.md          # User guide
-    ├── VISUAL_SHOWCASE.md     # Before/after
-    ├── DESIGN_REFERENCE.md    # Design specs
-    ├── TECHNICAL.md           # Technical details
-    ├── ENHANCEMENT_SUMMARY.md # Project summary
-    └── ... (7 more docs)
-```
-
-## 🎁 What You Get
-
-- ✅ **Modern GUI** - Beautiful, professional appearance
-- ✅ **Strong Security** - Military-grade cryptography
-- ✅ **Full Documentation** - 11 comprehensive guides
-- ✅ **Complete Testing** - All systems verified
-- ✅ **Production Ready** - Deploy immediately
-- ✅ **Easy to Use** - Intuitive interface
-- ✅ **Easy to Maintain** - Well-documented code
-- ✅ **Easy to Extend** - Clean architecture
-
-## 🎉 Result
-
-A world-class secure file sharing application with:
-- **Beautiful modern GUI** that users love
-- **Strong cryptographic security** that works
-- **Comprehensive documentation** that explains
-- **Full test coverage** that verifies
-- **Professional polish** that impresses
-
-## 📞 Documentation Index
-
-For quick access to information, start with:
-1. **[INDEX.md](INDEX.md)** - Complete navigation guide
-
-## 🌟 Features Highlight
-
-### Visual Design ✨
-- Modern dark theme
-- Bright cyan accents
-- Professional layout
-- Clear visual hierarchy
-
-### User Experience 💡
-- Intuitive navigation
-- Color-coded actions
-- Clear status feedback
-- Professional appearance
-
-### Security 🔐
-- RSA-2048 encryption
-- AES-256-GCM encryption
-- SHA-256 signatures
-- Digital signatures
-
-### Documentation 📚
-- User guides
-- Design specifications
-- Technical documentation
-- Visual references
-
-## 🚀 Ready to Start?
-
-```bash
 # Run the application
 python securefile.py
 
 # Run tests
 python securefile.py --test
-
-# Get help
-python securefile.py --help
 ```
 
-## 📝 Notes
+### Run with Docker
+```bash
+# Build the image
+docker build -t secureshare-pro .
 
-- All cryptographic functionality is **completely intact**
-- No security features were removed or weakened
-- The application is **production-ready** and fully tested
-- Comprehensive documentation is included for reference
-- The design is **fully documented** for future maintenance
+# Run the application
+docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v $(pwd)/data:/app/data secureshare-pro
+```
 
-## ✨ Quality Assurance
+### Pull from GitHub Container Registry
+```bash
+# Login to GitHub Container Registry
+echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
 
-- ✅ All tests passing (5/5 - 100%)
-- ✅ All security features verified
-- ✅ GUI rendering correct
-- ✅ User interactions smooth
-- ✅ Performance optimized
-- ✅ Documentation complete
-- ✅ Code well-organized
-- ✅ Ready for deployment
+# Pull the image
+docker pull ghcr.io/USERNAME/securepro:latest
+
+# Run
+docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
+    ghcr.io/USERNAME/securepro:latest
+```
+
+## 📦 Docker Usage
+
+### Building Locally
+
+```bash
+# Clone the repository
+git clone https://github.com/USERNAME/securepro.git
+cd securepro
+
+# Build Docker image
+docker build -t secureshare-pro:latest .
+
+# Run with X11 forwarding (for GUI)
+xhost +local:docker
+docker run -e DISPLAY=$DISPLAY \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v $(pwd)/secure_vault:/app/secure_vault \
+    -v $(pwd)/data:/app/data \
+    --network host \
+    secureshare-pro:latest
+```
+
+### Using GitHub Container Registry
+
+```bash
+# Authenticate
+docker login ghcr.io -u GITHUB_USERNAME -p GITHUB_TOKEN
+
+# Pull latest release
+docker pull ghcr.io/USERNAME/securepro:latest
+
+# Run container
+docker run -e DISPLAY=$DISPLAY \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v secureshare_data:/app/secure_vault \
+    ghcr.io/USERNAME/securepro:latest
+```
+
+### Docker Compose
+
+```yaml
+version: '3.8'
+services:
+  secureshare-pro:
+    image: ghcr.io/USERNAME/securepro:latest
+    container_name: secureshare-pro
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - ./data:/app/data
+      - ./secure_vault:/app/secure_vault
+    network_mode: host
+    restart: unless-stopped
+```
+
+## 🔐 Security Features
+
+### Implemented Security Mechanisms
+
+1. **PKI Infrastructure**
+   - RSA-2048 key pair generation
+   - X.509 self-signed certificates
+   - Certificate storage and retrieval
+
+2. **Hybrid Encryption**
+   - AES-256-GCM for file encryption (fast, symmetric)
+   - RSA-OAEP for key encryption (secure, asymmetric)
+   - Perfect forward secrecy
+
+3. **Digital Signatures**
+   - RSA-PSS with SHA-256
+   - Non-repudiation
+   - Tamper detection
+
+4. **Key Protection**
+   - PBKDF2 key derivation (100,000 iterations)
+   - Salted keys
+   - Password-protected private keys
+
+5. **Attack Prevention**
+   - Tamper detection (signature verification)
+   - Replay protection (timestamps)
+   - Integrity verification (SHA-256 hashes)
+
+### Security Verification
+
+```bash
+# Run security tests
+python securefile.py --test
+
+# Run static analysis
+bandit -r .
+
+# Run code quality
+pylint securefile.py
+```
+
+## 📁 Project Structure
+
+```
+securepro/
+├── securefile.py              # Main application (GUI + Crypto)
+├── Dockerfile                 # Docker build file
+├── requirements.txt           # Python dependencies
+├── .github/
+│   └── workflows/
+│       └── main.yml          # CI/CD pipeline
+├── tests/
+│   ├── __init__.py
+│   └── test_securefile.py    # Unit tests (20 tests)
+├── secure_vault/              # Key storage (simulated HSM)
+│   ├── keys.json
+│   ├── certificates.json
+│   └── shared_files.json
+├── certs/                     # Certificate storage
+│   └── monika.pem
+├── keystores/                 # Key store
+│   └── monika.p12
+├── trusted_certs/             # Trusted certificates
+└── .gitignore                 # Git ignore rules
+```
+
+## 🧪 Testing
+
+### Unit Tests Coverage
+
+```bash
+# Run all tests
+pytest tests/test_securefile.py -v
+
+# Test results
+tests/test_securefile.py::TestCryptoEngine - 7 tests
+tests/test_securefile.py::TestKeyVault - 4 tests
+tests/test_securefile.py::TestSecureFileSharingSystem - 6 tests
+tests/test_securefile.py::TestIntegration - 2 tests
+```
+
+### Test Categories
+
+| Test Class | Tests | Coverage |
+|------------|-------|----------|
+| TestCryptoEngine | 7 | Key generation, encryption, signatures |
+| TestKeyVault | 4 | Key storage, certificate management |
+| TestSecureFileSharingSystem | 6 | User management, file operations |
+| TestIntegration | 2 | Complete workflow, tamper detection |
+
+## 🚢 CI/CD Pipeline
+
+### GitHub Actions Workflow
+
+The CI/CD pipeline automatically:
+1. Runs on every push and pull request
+2. Executes PyLint for code quality
+3. Runs Bandit for security analysis
+4. Executes all unit tests
+5. Builds and pushes Docker image on version tags
+6. Creates GitHub releases
+
+### Workflow Triggers
+
+```yaml
+on:
+  push:
+    branches: ["**"]        # All branches
+  pull_request:
+    branches: ["**"]        # All PRs
+  tags:
+    - "v*"                  # Version tags (releases)
+  workflow_dispatch:         # Manual trigger
+```
+
+## 🔮 Future Development
+
+### Planned Features
+
+1. **Enhanced PKI**
+   - Certificate Authority (CA) support
+   - Certificate chain validation
+   - CRL (Certificate Revocation List) support
+   - OCSP (Online Certificate Status Protocol)
+
+2. **Advanced Cryptography**
+   - Elliptic Curve Cryptography (ECC)
+   - Post-quantum cryptography readiness
+   - Homomorphic encryption (research)
+
+3. **Network Features**
+   - Secure peer-to-peer file transfer
+   - Encrypted messaging
+   - Group file sharing
+   - Secure key exchange protocol
+
+4. **Enterprise Features**
+   - LDAP/Active Directory integration
+   - Multi-factor authentication
+   - Audit logging
+   - HSM integration
+   - Role-based access control
+
+5. **UI/UX Improvements**
+   - Web interface
+   - Mobile app
+   - CLI interface
+   - Dark/Light theme toggle
+
+6. **Deployment Options**
+   - Kubernetes deployment
+   - Docker Compose production stack
+   - Cloud deployment (AWS, GCP, Azure)
+   - IoT device support
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Implement your feature
+4. Add tests for new functionality
+5. Submit a pull request
+
+## 📚 Documentation
+
+### Core Documentation
+- **securefile.py** - Main application with comprehensive docstrings
+- **tests/test_securefile.py** - 20 unit tests with examples
+- **.github/workflows/main.yml** - CI/CD pipeline configuration
+
+### Additional Resources
+- [Architecture Guide](#-architecture-design)
+- [Security Features](#-security-features)
+- [Docker Usage](#-docker-usage)
+- [Testing Guide](#-testing)
+
+## 🛡️ Security Considerations
+
+### For Production Use
+
+1. **Key Management**
+   - Use hardware security modules (HSM)
+   - Implement key rotation policies
+   - Secure key backup procedures
+
+2. **Certificate Management**
+   - Use trusted CA certificates
+   - Implement certificate expiration monitoring
+   - Establish revocation procedures
+
+3. **Access Control**
+   - Strong password policies
+   - Multi-factor authentication
+   - Audit logging
+
+4. **Network Security**
+   - TLS for all communications
+   - Firewall rules
+   - Intrusion detection
+
+### Security Limitations
+
+- Self-signed certificates (development only)
+- Simulated HSM (use real HSM for production)
+- Local-only key storage (consider cloud KMS)
+
+## 📄 License
+
+This project is for educational purposes as part of the ST6051CEM - Practical Cryptography module.
+
+## 👤 Author
+
+**SecureShare Pro**
+- Module: ST6051CEM - Practical Cryptography
+- Student: [Your Name]
+- Student ID: [Your ID]
 
 ---
 
-**Version**: 2.0 (GUI Enhanced)  
-**Status**: ✅ Production Ready  
-**Date**: January 2026  
-**Quality**: World-Class  
+## 🎯 Quick Reference
 
-**Start using SecureShare Pro today!** 🔐✨
+| Task | Command |
+|------|---------|
+| Run application | `python securefile.py` |
+| Run tests | `pytest tests/test_securefile.py -v` |
+| Security scan | `bandit -r . --exit-zero` |
+| Code quality | `pylint securefile.py || true` |
+| Build Docker | `docker build -t secureshare-pro .` |
+| Run Docker | `docker run secureshare-pro` |
+
+---
+
+**🔐 SecureShare Pro - Military-Grade Encryption Made Simple** 🔐
 
 ```bash
+# Get started
 python securefile.py
 ```
 
-For more information, see [INDEX.md](INDEX.md) for a complete documentation guide.

@@ -99,6 +99,7 @@ class TestCryptoEngine(unittest.TestCase):
     
     def test_derive_key_from_password(self):
         """Test key derivation from password using PBKDF2."""
+        # nosec B105 - test password, not a real secret
         password = "secure_password_123"
         salt = os.urandom(16)
         
@@ -139,6 +140,7 @@ class TestKeyVault(unittest.TestCase):
     def test_save_and_load_private_key(self):
         """Test saving and loading password-protected private key."""
         private_key, _ = CryptoEngine.generate_key_pair()
+        # nosec B105 - test password, not a real secret
         password = "test_password_123"
         key_id = "test_key"
         
@@ -296,6 +298,7 @@ class TestSecureFileSharingSystem(unittest.TestCase):
             self.system.user_private_key = None  # Reset
             self.system.login(recipient, "recipient_pass")
             
+            # nosec B306 - test file, not security critical
             output_file = tempfile.mktemp(suffix='.txt')
             success, message = self.system.decrypt_and_verify_file(
                 metadata['file_id'],
@@ -390,6 +393,7 @@ class TestIntegration(unittest.TestCase):
             
             # Bob receives and decrypts
             self.system.login("bob", "bob_pass123")
+            # nosec B306 - test file, not security critical
             output_file = tempfile.mktemp(suffix='.txt')
             success, message = self.system.decrypt_and_verify_file(
                 metadata['file_id'],
@@ -432,6 +436,7 @@ class TestIntegration(unittest.TestCase):
             
             # Try to decrypt tampered file
             self.system.login("bob", "bob_pass123")
+            # nosec B306 - test file, not security critical
             output_file = tempfile.mktemp(suffix='.txt')
             success, message = self.system.decrypt_and_verify_file(
                 f"tampered_{metadata['file_id']}",

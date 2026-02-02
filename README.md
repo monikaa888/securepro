@@ -379,17 +379,6 @@ on:
 - Simulated HSM (use real HSM for production)
 - Local-only key storage (consider cloud KMS)
 
-## 📄 License
-
-This project is for educational purposes as part of the ST6051CEM - Practical Cryptography module.
-
-## 👤 Author
-
-**SecureShare Pro**
-- Module: ST6051CEM - Practical Cryptography
-- Student: [Your Name]
-- Student ID: [Your ID]
-
 ---
 
 ## 🎯 Quick Reference
@@ -411,4 +400,5 @@ This project is for educational purposes as part of the ST6051CEM - Practical Cr
 # Get started
 python securefile.py
 ```
+
 
